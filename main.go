@@ -142,6 +142,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	initDB()
+	createTables()
 
 	//Gorilla Mux执行顺序: 会先匹配路由，再执行中间件
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
@@ -193,6 +194,17 @@ func initDB() {
 
 	// 尝试连接，失败会报错
 	err = db.Ping()
+	checkError(err)
+}
+
+func createTables() {
+	createArticlesSQL := `CREATE TABLE IF NOT EXISTS articles(
+    id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    body longtext COLLATE utf8mb4_unicode_ci
+); `
+
+	_, err := db.Exec(createArticlesSQL)
 	checkError(err)
 }
 
