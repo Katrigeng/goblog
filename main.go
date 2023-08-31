@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"goblog/pkg/route"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,7 +17,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var router = mux.NewRouter()
+var router *mux.Router
 var db *sql.DB
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +36,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	// 1. 获取 URL 参数
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	// 2. 读取对应的文章数据
 	article, err := getArticleByID(id)
@@ -56,11 +57,11 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 		// 4. 读取成功
 		// fmt.Fprint(w, "读取成功，文章标题 —— "+article.Title)
 		tmpl, err := template.New("show.gohtml").
-            Funcs(template.FuncMap{
-                "RouteName2URL": RouteName2URL,
-                "Int64ToString": Int64ToString,
-            }).
-            ParseFiles("resources/views/articles/show.gohtml")
+			Funcs(template.FuncMap{
+				"RouteName2URL": route.Name2URL,
+				"Int64ToString": Int64ToString,
+			}).
+			ParseFiles("resources/views/articles/show.gohtml")
 		checkError(err)
 
 		err = tmpl.Execute(w, article)
@@ -68,20 +69,9 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// RouteName2URL 通过路由名称来获取 URL
-func RouteName2URL(routeName string, pairs ...string) string {
-    url, err := router.Get(routeName).URL(pairs...)
-    if err != nil {
-        checkError(err)
-        return ""
-    }
-
-    return url.String()
-}
-
 // Int64ToString 将 int64 转换为 string
 func Int64ToString(num int64) string {
-    return strconv.FormatInt(num, 10)
+	return strconv.FormatInt(num, 10)
 }
 
 func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -218,7 +208,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 1. 获取 URL 参数
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	// 2. 读取对应的文章数据
 	article, err := getArticleByID(id)
@@ -255,7 +245,7 @@ func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 1. 获取 URL 参数
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	// 2. 读取对应的文章数据
 	_, err := getArticleByID(id)
@@ -322,7 +312,7 @@ func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 1. 获取 URL 参数
-	id := getRouteVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	// 2. 读取对应的文章数据
 	article, err := getArticleByID(id)
@@ -383,6 +373,9 @@ func main() {
 
 	initDB()
 	createTables()
+
+	route.Initialize()
+	router = route.Router
 
 	//Gorilla Mux执行顺序: 会先匹配路由，再执行中间件
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
@@ -489,11 +482,6 @@ func saveArticleToDB(title string, body string) (int64, error) {
 	}
 
 	return 0, err
-}
-
-func getRouteVariable(parameterName string, r *http.Request) string {
-	vars := mux.Vars(r)
-	return vars[parameterName]
 }
 
 func getArticleByID(id string) (Article, error) {
