@@ -38,11 +38,22 @@ func (article *Article) Create() (err error) {
 
 // Update 更新文章
 func (article *Article) Update() (rowsAffected int64, err error) {
-    result := model.DB.Save(&article)
-    if err = result.Error; err != nil {
-        logger.LogError(err)
-        return 0, err
-    }
+	result := model.DB.Save(&article)
+	if err = result.Error; err != nil {
+		logger.LogError(err)
+		return 0, err
+	}
 
-    return result.RowsAffected, nil
+	return result.RowsAffected, nil
+}
+
+// Delete 删除文章
+func (article *Article) Delete() (rowsAffected int64, err error) {
+	result := model.DB.Delete(&article)
+	if err = result.Error; err != nil {
+		logger.LogError(err)
+		return 0, err
+	}
+
+	return result.RowsAffected, nil
 }
