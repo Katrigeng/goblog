@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"goblog/app/models/user"
 	"goblog/app/requests"
 	"goblog/pkg/view"
@@ -37,13 +38,22 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 			"User":   _user,
 		}, "auth.register")
 	} else {
-		// _user.Create()
-		// if _user.ID > 0 {
-		// 	fmt.Fprint(w, "插入成功，ID为"+_user.GetStringID())
-		// } else {
-		// 	w.WriteHeader(http.StatusInternalServerError)
-		// 	fmt.Fprint(w, "创建用户失败，请联系管理员")
-		// }
+		_user.Create()
+		if _user.ID > 0 {
+			fmt.Fprint(w, "插入成功，ID为"+_user.GetStringID())
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "创建用户失败，请联系管理员")
+		}
 	}
+
+}
+
+// Login 显示登录表单
+func (*AuthController) Login(w http.ResponseWriter, r *http.Request) {
+	view.RenderSimple(w, view.D{}, "auth.login")
+}
+
+func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 }
