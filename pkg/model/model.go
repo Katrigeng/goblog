@@ -23,13 +23,14 @@ func ConnectDB() *gorm.DB {
 	gormConfig := mysql.New(mysql.Config{
 		// DSN: "root:123456@tcp(192.168.240.182:3306)/goblog?charset=utf8&parseTime=True&loc=Local",
 		// DSN: "root:root@tcp(127.0.0.1:3306)/goblog?charset=utf8&parseTime=True&loc=Local",
+
 		DSN: fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=%v&parseTime=True&loc=Local",
-			config.GetString("database.username"),
-			config.GetString("database.password"),
-			config.GetString("database.host"),
-			config.GetString("database.port"),
-			config.GetString("database.database"),
-			config.GetString("database.charset")),
+			config.GetString("database.mysql.username"),
+			config.GetString("database.mysql.password"),
+			config.GetString("database.mysql.host"),
+			config.GetString("database.mysql.port"),
+			config.GetString("database.mysql.database"),
+			config.GetString("database.mysql.charset")),
 	})
 
 	var level gormlogger.LogLevel
