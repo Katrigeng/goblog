@@ -17,3 +17,8 @@ type User struct {
 func (User *User) ComparePassword(_password string) bool {
 	return password.CheckHash(_password, User.Password)
 }
+
+// Link 方法用来生成用户链接
+func (user *User) Link() string {
+	return ""
+}
