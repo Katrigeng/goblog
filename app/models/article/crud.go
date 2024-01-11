@@ -8,13 +8,13 @@ import (
 
 // Get 通过 ID 获取文章
 func Get(idstr string) (Article, error) {
-	var article Article
+	var articles Article
 	id := types.StringToUint64(idstr)
-	if err := model.DB.Preload("User").First(&article, id).Error; err != nil {
-		return article, err
+	if err := model.DB.Preload("User").First(&articles, id).Error; err != nil {
+		return articles, err
 	}
 
-	return article, nil
+	return articles, nil
 }
 
 // GetAll 获取全部文章
