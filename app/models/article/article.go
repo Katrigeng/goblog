@@ -10,10 +10,11 @@ import (
 // Article 文章模型
 type Article struct {
 	models.BaseModel
-	Title  string `gorm:"type:varchar(255);not null;" valid:"title"`
-	Body   string `gorm:"type:longtext;not null;" valid:"body"`
-	UserId uint64 `gorm:"type:not null;index"`
-	User   user.User
+	Title      string `gorm:"type:varchar(255);not null;" valid:"title"`
+	Body       string `gorm:"type:longtext;not null;" valid:"body"`
+	UserId     uint64 `gorm:"type:not null;index"`
+	CategoryID uint64 `gorm:"not null;default:4;index"`
+	User       user.User
 }
 
 // Link 方法用来生成文章链接
